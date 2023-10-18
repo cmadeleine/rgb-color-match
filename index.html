@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>RGB Match</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@800&display=swap" rel="stylesheet">
+
+        <style>
+
+            body {
+                background-color: black;
+                overflow: hidden; /* Hide scrollbars */
+            }
+            .fade_bkg {
+                transition-property: background-color;
+                transition-duration: 3s;
+            }
+
+            .fade_txt {
+                transition-property: color;
+                transition-duration: 3s;
+            }
+
+            p {
+                font-family: 'Azeret Mono', monospace;
+                text-align: center;
+                font-size: 9vw;
+                margin: 0vh;
+                color: black;
+
+            }
+
+            .hex_txt {
+                font-size: 14vw;
+                align-self: center;
+            }
+            
+            .box_1 {
+                display: grid;
+                height: 95vh;
+                grid-template-rows: 35% 65%;
+            }
+
+            .box_2 {
+                display: grid;
+                width: 90vw;
+                justify-self: center;
+                gap: 0vw;
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .box_3 {
+                display: grid;
+                grid-template-rows: 20% 20% 20%;
+            }
+
+            .rgb {
+                align-self: center;
+            }
+
+            .up_button {
+                justify-self: center;
+                background-color: transparent;
+                border-color: transparent;
+            }
+
+            .down_button {
+                justify-self: center;
+                background-color: transparent;
+                border-color: transparent;
+                transform: rotate(180deg);
+                -webkit-transform: rotate(180deg);
+            }
+
+            .up_arrow {
+                align-self: center;
+                margin-bottom: 50%;
+                font-size: 12vw;
+
+                color: rgb(000, 000, 000);
+            }
+
+            .down_arrow {
+                align-self: center;
+                margin-bottom: 50%;
+                font-size: 12vw;   
+
+                color: rgb(000, 000, 000);
+            }
+
+            .info {
+                border-radius: 50%;
+                border: transparent;
+                height: 6vh;
+                width: 6vh;
+                position: absolute;
+                top: 6vh;
+                right: 8vh;
+                background-color: rgb(000, 000, 000);
+                
+                
+            }
+
+            .score {
+                position: absolute;
+                text-align: center;
+                width: 100vw;
+                top: 15vh;
+            }
+
+            .infobox {
+                position: absolute;
+                top: 0;
+                width: 100%;
+                display: grid;
+                grid-template-columns: 25% 50% 25%;
+            }
+
+            .difficulty {
+                position: absolute;
+                left: 20vw;
+                text-align: center;
+                width: 50vw;
+                left: 0;
+                height: 25px;
+                background: #d3d3d3;
+                outline: none;
+                opacity: 0.7;
+
+            }
+
+            .hide {
+                visibility: hidden;
+            }
+       
+        </style>
+    </head>
+
+    <body onload="main()" class="fade_bkg">
+        
+        <div class="box_1" id="box_1">
+
+            <p class="hex_txt" id="hex_val">#000000</p> 
+
+            <div class="box_2">
+                
+                <div class="box_3" id="r_box">
+                    <button class="up_button" onclick="r_change(1)"><p class="up_arrow" id="r_up">^</p></button>
+                    <div class="rgb" id="r_val"><p>000</p></div>
+                    <button class="down_button" onclick="r_change(-1)"><p class="down_arrow" id="r_down">^</p></button>
+                </div>
+
+                <div class="box_3" id="g_box">
+                    <button class="up_button" onclick="g_change(1)"><p class="up_arrow" id="g_up">^</p></button>
+                    <div class="rgb" id="g_val"><p>000</p></div>
+                    <button class="down_button" onclick="g_change(-1)"><p class="down_arrow" id="g_down">^</p></button>
+                </div>
+
+                <div class="box_3" id="b_box">
+                    <button class="up_button" onclick="b_change(1)"><p class="up_arrow" id="b_up">^</p></button>
+                    <div class="rgb" id="b_val"><p>000</p></div>
+                    <button class="down_button" onclick="b_change(-1)"><p class="down_arrow" id="b_down">^</p></button>
+                </div>
+                
+            </div>
+        </div>
+
+        <script>
+
+let r = 0;
+let g = 0;
+let b = 0;
+let score = 0;
+let step = 15;
+let bkg_color;
+let body_default;
+let home = true;
+
+function main() {
+
+    bkg_color = rand_color();
+
+    document.body.style.background = bkg_color;
+
+}
+
+function rand_color() {
+
+    if (0xFF % step != 0x0) {
+        error('Invalid step');
+    }
+
+    let options = 0xFF / step;
+
+    let r = Math.floor(Math.random() * options) * step;
+    let g = Math.floor(Math.random() * options) * step;
+    let b = Math.floor(Math.random() * options) * step;
+
+    let color = (r << 16) + (g << 8) + b;
+
+    r = hex_to_str(r);
+    g = hex_to_str(g);
+    b = hex_to_str(b);
+
+    color = '#' + r + b + g;
+
+    return color;
+
+}
+
+function dec_to_str(val) {
+
+    let result = '';
+
+    if (val < 100) {
+        result += '0';
+    }
+    if (val < 10) {
+        result += '0';
+    }
+
+    result += val.toString();
+    return result;
+}
+
+function hex_to_str(val) {
+
+    let result = '';
+
+    if (val < 0x10) {
+        result += '0';
+    }
+
+    result += val.toString(16);
+    result = result.toUpperCase();
+    return result;
+}
+
+
+function r_change(val) {
+
+    if ((val == 1 && r < 255) || (val == -1 && r > 0)) {
+        r += step * val;
+    }
+
+    update_hex();
+}
+
+function g_change(val) {
+
+    if ((val == 1 && g < 255) || (val == -1 && g > 0)) {
+        g += step * val;
+    }
+
+    update_hex();
+}
+
+function b_change(val) {
+
+    if ((val == 1 && b < 255) || (val == -1 && b > 0)) {
+        b += step * val;
+    }
+
+    update_hex();
+}
+
+function update_hex() {
+
+    let result = '#';
+    result += hex_to_str(r);
+    result += hex_to_str(g);
+    result += hex_to_str(b);
+
+    set_colors(result);
+
+    if (bkg_color == result) {
+        setTimeout(function() { match()} , 100);
+    }
+    return result;
+}
+
+function match() {
+
+    r = 0;
+    g = 0;
+    b = 0;
+    score += 1;
+
+    set_fade(true);
+
+    bkg_color = rand_color();
+    document.body.style.background = bkg_color;
+
+    set_colors(bkg_color);
+    setTimeout(function() { update_hex() }, 1000);
+
+    setTimeout(function() { set_fade(false); }, 
+                            2500);
+
+}
+
+function set_colors(color) {
+
+    document.getElementById("hex_val").style.color = color;
+    document.getElementById("hex_val").textContent = color;
+
+    document.getElementById("r_up").style.color = color;
+    document.getElementById("r_val").firstElementChild.style.color = color;
+    document.getElementById("r_val").firstElementChild.textContent = dec_to_str(r);
+    document.getElementById("r_down").style.color = color;
+
+    document.getElementById("g_up").style.color = color;
+    document.getElementById("g_val").firstElementChild.style.color = color;
+    document.getElementById("g_val").firstElementChild.textContent = dec_to_str(g);
+    document.getElementById("g_down").style.color = color;
+
+    document.getElementById("b_up").style.color = color;
+    document.getElementById("b_val").firstElementChild.style.color = color;
+    document.getElementById("b_val").firstElementChild.textContent = dec_to_str(b);
+    document.getElementById("b_down").style.color = color;
+
+}
+
+
+function set_fade(val) {
+
+    let fade_helper = function(element) {
+        if (val) {
+            element.className += " fade_txt";
+        }
+        else {
+            element.className = element.className.replace(" fade_txt", "");
+        }
+
+    }
+
+    fade_helper(document.getElementById("hex_val"));
+
+    fade_helper(document.getElementById("r_up"));
+    fade_helper(document.getElementById("r_val").firstElementChild);
+    fade_helper(document.getElementById("r_down"));
+
+    fade_helper(document.getElementById("g_up"));
+    fade_helper(document.getElementById("g_val").firstElementChild);
+    fade_helper(document.getElementById("g_down"));
+
+    fade_helper(document.getElementById("b_up"));
+    fade_helper(document.getElementById("b_val").firstElementChild);
+    fade_helper(document.getElementById("b_down"));
+
+}
+
+        </script>
+
+    </body>
+</html>
